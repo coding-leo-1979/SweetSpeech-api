@@ -17,7 +17,14 @@ def read_comments(post_id: int):
         return None
     
     response = supabase.table("comments").select("*").eq("post_id", post_id).execute()
-    return response.data
+    comments = response.data
+
+    # 관리자가 검토 중인 댓글인지 확인하기
+    for comment in comments:
+        if comment.get("needs_review", True):
+            comment["content"] = "관리자가 검토 중인 댓글입니다."
+
+    return comments
 
 def update_comment(comment_id: int, comment: CommentUpdate):
     # comment가 존재하는지 확인하기

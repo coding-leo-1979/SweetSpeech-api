@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 
 class PostCreate(BaseModel):
@@ -24,6 +24,7 @@ class CommentResponse(CommentCreate):
     id: int
     created_at: str
     updated_at: str
+    needs_review: bool = Field(default=False)
 
 class SanitizedCommentResponse(BaseModel):
     sanitized_comment: str
