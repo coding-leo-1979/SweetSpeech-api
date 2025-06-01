@@ -1,5 +1,6 @@
 from app.database import supabase
 from app.schemas import CommentCreate, CommentUpdate
+from app.middlewares.openai_model import polite_comment_middleware
 
 def create_comment(comment: CommentCreate):
     # post가 존재하는지 확인하기
@@ -7,8 +8,28 @@ def create_comment(comment: CommentCreate):
     if not is_post.data:
         return None
 
+    is_impolite = True
+    
+    # 악플인 경우
+    if is_impolite:
+        polite_comment = polite_comment_middleware(comment.content)
+        comment.content = polite_comment
+        return { "polite_comment": polite_comment }
+
+    # 악플이 아닌 경우
+    else:
+        response = supabase.table("comments").insert(comment.model_dump()).execute()
+        return response.data[0]
+
+def create_polite_comment(comment: CommentCreate):
+    # post가 존재하는지 확인하기
+    is_post = supabase.table("posts").select("id").eq("id", comment.post_id).execute()
+    if not is_post.data:
+        return None
+    
     response = supabase.table("comments").insert(comment.model_dump()).execute()
     return response.data[0]
+
 
 def read_comments(post_id: int):
     # post가 존재하는지 확인하기

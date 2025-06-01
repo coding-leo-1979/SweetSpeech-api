@@ -26,5 +26,5 @@ class CommentResponse(CommentCreate):
     updated_at: str
     needs_review: bool = Field(default=False)
 
-class SanitizedCommentResponse(BaseModel):
-    sanitized_comment: str
+class PoliteCommentResponse(BaseModel):
+    polite_comment: str

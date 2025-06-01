@@ -1,11 +1,29 @@
-from fastapi import APIRouter, HTTPException
-from typing import List
-from app.schemas import CommentCreate, CommentUpdate, CommentResponse
+from fastapi import APIRouter, HTTPException, Response
+from typing import List, Union
+from app.schemas import CommentCreate, CommentUpdate, CommentResponse, PoliteCommentResponse
 from app.crud import comments
 
 router = APIRouter()
 
-@router.post("/", response_model=CommentResponse)
+@router.post("/",
+             response_model=Union[CommentResponse, PoliteCommentResponse],
+             responses={
+                 200: {"model": CommentResponse},
+                 201: {"model": PoliteCommentResponse}
+             })
+def create_comment(comment: CommentCreate, response: Response):
+    data = comments.create_comment(comment)
+    if data is None:
+        raise HTTPException(status_code=404, detail="해당 게시글이 존재하지 않습니다.")
+    
+    if "polite_comment" in data:
+        response.status_code = 201
+        return data
+    
+    response.status_code = 200
+    return data
+
+@router.post("/polite", response_model=CommentResponse)
 def create_comment(comment: CommentCreate):
     data = comments.create_comment(comment)
     if data is None:
