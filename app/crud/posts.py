@@ -6,7 +6,7 @@ def create_post(post: PostCreate):
     return response.data[0]
 
 def read_posts():
-    response = supabase.table("posts").select("*").execute()
+    response = supabase.table("posts").select("*").order("id", desc=True).execute()
     return response.data
 
 def read_post(post_id: int):

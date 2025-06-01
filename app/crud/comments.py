@@ -37,7 +37,7 @@ def read_comments(post_id: int):
     if not is_post.data:
         return None
     
-    response = supabase.table("comments").select("*").eq("post_id", post_id).execute()
+    response = supabase.table("comments").select("*").eq("post_id", post_id).order("id").execute()
     comments = response.data
 
     # 관리자가 검토 중인 댓글인지 확인하기
