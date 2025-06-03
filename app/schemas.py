@@ -24,7 +24,7 @@ class CommentResponse(CommentCreate):
     id: int
     created_at: str
     updated_at: str
-    needs_review: bool = Field(default=False)
+    needs_review: str = Field(default="false")
 
 class PoliteCommentResponse(BaseModel):
     polite_comment: str

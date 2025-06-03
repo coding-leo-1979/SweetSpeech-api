@@ -1,8 +1,8 @@
 from app.database import supabase
-from app.schemas import CommentCreate
+from app.schemas import CommentCreate, CommentUpdate
 
 def read_comments_need_review():
-    response = supabase.table("comments").select("*").eq("needs_review", True).execute()
+    response = supabase.table("comments").select("*").eq("needs_review", "true").order("id").execute()
     return response.data
 
 def read_comment_post(comment_id: int):
@@ -19,7 +19,7 @@ def read_comment_post(comment_id: int):
 def comment_is_not_bad(comment_id: int):
     # needs_review를 True에서 False로 업데이트
     response = supabase.table("comments") \
-                .update({"needs_review": False}) \
+                .update({"needs_review": "false"}) \
                 .eq("id", comment_id).execute()
     return response.data[0]
 
@@ -30,4 +30,16 @@ def comment_is_bad(comment_id: int):
         return None
     
     response = supabase.table("comments").delete().eq("id", comment_id).execute()
+    return response.data[0]
+
+def comment_block(comment_id: int, comment: CommentUpdate):
+    # comment가 존재하는지 확인하기
+    is_comment = supabase.table("comments").select("id").eq("id", comment_id).execute()
+    if not is_comment.data:
+        return None
+    
+    update_data = comment.model_dump()
+    update_data['needs_review'] = "blocked"
+
+    response = supabase.table("comments").update(update_data).eq("id", comment_id).execute()
     return response.data[0]

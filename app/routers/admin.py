@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from typing import List
-from app.schemas import PostResponse, CommentCreate, CommentResponse
+from app.schemas import PostResponse, CommentUpdate, CommentResponse
 from app.crud import admin
 
 router = APIRouter()
@@ -29,3 +29,10 @@ def delete_comment(comment_id: int):
     if data is None:
         raise HTTPException(status_code=404, detail="해당 댓글이 존재하지 않습니다.")
     return { "message": "댓글이 삭제되었습니다."}
+
+@router.put("/block/{comment_id}", response_model=CommentResponse)
+def comment_block(comment_id: int, comment: CommentUpdate):
+    updated_comment = admin.comment_block(comment_id, comment)
+    if updated_comment is None:
+        raise HTTPException(status_code=404, detail="해당 댓글을 찾을 수 없습니다.")
+    return updated_comment
