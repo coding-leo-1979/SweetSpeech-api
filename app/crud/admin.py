@@ -39,6 +39,9 @@ def comment_block(comment_id: int, comment: CommentUpdate):
         return None
     
     update_data = comment.model_dump()
+
+    reason = comment.content or "관리자 판단"
+    update_data['content'] = f"블락된 댓글입니다. (사유: {reason})"
     update_data['needs_review'] = "blocked"
 
     response = supabase.table("comments").update(update_data).eq("id", comment_id).execute()
