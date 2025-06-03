@@ -41,8 +41,18 @@ def polite_comment_middleware(comment_text: str) -> str:
 
         polite_comment = response.choices[0].message.content.strip()
         return polite_comment
+    
+    except Exception as e:
+        # 문자열 형태로 에러 메시지를 추출
+        error_str = str(e)
 
-    except Exception as ex:
-        # 에러 발생 시 원문 그대로 반환 (혹은 로깅)
-        print(f"Error refining comment: {ex}")
-        return comment_text
+        # 콘텐츠 필터 코드 포함 여부 확인
+        if "content_filter" in error_str or "ResponsibleAIPolicyViolation" in error_str:
+            return "순화할 수 없는 댓글입니다."
+        elif "404" in error_str:
+            return "순화할 수 없는 댓글입니다."
+        elif "500" in error_str:
+            return "시스템 오류가 발생했습니다. 잠시 후 다시 시도해주세요."
+        else:
+            print(f"Unhandled error: {error_str}")
+            return "시스템 오류가 발생했습니다. 잠시 후 다시 시도해주세요."
