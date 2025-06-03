@@ -42,7 +42,7 @@ def is_impolite_middleware(comment_text: str) -> tuple[bool, bool]:
                 is_impolite = prediction == 1
 
                 # needs_review 기준 (모호한 경우만 True)
-                needs_review = 0.5 <= prob_hate < 0.9
+                needs_review = 0.3 <= prob_hate < 0.5
 
                 return is_impolite, needs_review
             else:
