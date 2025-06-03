@@ -47,7 +47,7 @@ def read_comments(post_id: int):
 
     # 관리자가 검토 중인 댓글인지 확인하기
     for comment in comments:
-        if comment.get("needs_review", "true"):
+        if comment.get("needs_review") == "true":
             comment["content"] = "관리자가 검토 중인 댓글입니다."
 
     return comments
